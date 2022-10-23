@@ -15,13 +15,12 @@
     background-color: bisque;
 }
 
-
-.caption {
+* {
     color: grey;
     font-style: italic;
     font-size: 15px;
     font-family: 'Unna', serif;
-    margin: 0px 0px 5px 0px;
+    margin: 0px 0px 0px 0px;
 }
 
 .page-layout {
@@ -55,20 +54,44 @@
     border-bottom: 1px solid grey;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+    cursor: crosshair;
 }
 
 .gridControls {
     padding: 10px;
+    border-bottom: 1px dotted grey;
     box-sizing: border-box;
+}
+
+.cursorMode {
+    width: 500px;
+    padding: 10px;
+    height: 60px;
+    border-bottom: 1px dotted grey;
+    box-sizing: border-box;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-column-gap: 10px;
+}
+
+.editButs {
+    border-radius: 8px;
+    border: 1px solid grey;
+    background-color: blanchedalmond;
 }
 
 #gridSlider {
     -webkit-appearance: none;
     appearance: none;
-    width: 100%;
+    width: 99%;
     height: 25px;
     background-color: blanchedalmond;
     border: 1px solid grey;
+}
+
+#gridSlider:hover {
+    background-color: bisque;
 }
 
 #gridSlider::-webkit-slider-thumb {
@@ -76,9 +99,31 @@
     appearance: none;
     width: 25px;
     height: 25px;
-    background: white;
+    background: blanchedalmond;
+    background-image: url(img/sliderArrow.svg);
+    background-repeat: no-repeat;
+    background-position: 50%;
     border-left: var(--l-thumb) solid grey;
     border-right: var(--r-thumb) solid grey;
+}
+
+#gridSlider::-webkit-slider-thumb:hover {
+    background-color: white;
+}
+
+#gridSlider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: blanchedalmond;
+    background-image: url(img/sliderArrow.svg);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    border-left: var(--l-thumb) solid grey;
+    border-right: var(--r-thumb) solid grey;
+}
+
+#gridSlider::-moz-range-thumb:hover {
+    background-color: white;
 }
 
 
