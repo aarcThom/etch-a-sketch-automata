@@ -1,12 +1,85 @@
+/* importing from google fonts */
+@import url('https://fonts.googleapis.com/css2?family=Unna:ital@0;1&display=swap');
+
+:root {
+    --l-thumb: 0px;
+    --r-thumb: 1px;
+}
+
+/* need to set html and body also to height 100% */
+/* and remove the body margin (ie. white space around page content) */
+.page-layout, html, body {
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    background-color: bisque;
+}
+
+
+.caption {
+    color: grey;
+    font-style: italic;
+    font-size: 15px;
+    font-family: 'Unna', serif;
+    margin: 0px 0px 5px 0px;
+}
+
+.page-layout {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 100px;
+    gap: 50px;
+    box-sizing: border-box;
+
+    justify-content: center;
+    align-items: center;
+}
+
 .grid-container {
     width: 500px;
+    height: 700px;
+    border: 1px solid grey;
+    background-color: blanchedalmond;
+}
+
+.button-container {
+    width: 500px;
+    height: 700px;
+    border: 1px solid grey;
+    background-color: blanchedalmond;
+}
+
+.automata-grid {
+    width: 500px;
     height: 500px;
-    border: 1px solid black;
+    border-bottom: 1px solid grey;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
 }
 
-.grid-item2 {
-    background-color: black;
-    color: white;
+.gridControls {
+    padding: 10px;
+    box-sizing: border-box;
 }
+
+#gridSlider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 25px;
+    background-color: blanchedalmond;
+    border: 1px solid grey;
+}
+
+#gridSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: white;
+    border-left: var(--l-thumb) solid grey;
+    border-right: var(--r-thumb) solid grey;
+}
+
+
+

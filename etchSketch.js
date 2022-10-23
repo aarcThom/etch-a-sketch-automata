@@ -14,15 +14,22 @@ class gridCell {
         let cell= document.createElement('div');
         cell.id = this.id;
         cell.className = 'gridCell';
-        cell.style.border = ' 0.25px solid grey';
 
+        //don't want to have overlapping lines
+        if (this.xVal != 0) {
+            cell.style.borderLeft = '1px solid DarkSalmon';
+        }
+        if (this.yVal != 0) {
+            cell.style.borderBottom = ' 1px solid DarkSalmon';
+        }
+        
         this.container.appendChild(cell);
     }
 }
 
 
-
-function addGrid(gridCnt, grdContainer) {
+//function to populate grid container with grid cells
+function initGrid(gridCnt, grdContainer) {
     let gridDict = {};
 
     for (let y =gridCnt - 1; y >= 0; y--) {
@@ -33,24 +40,70 @@ function addGrid(gridCnt, grdContainer) {
     return gridDict;
 }
 
-// main
-
-let rowColCount = 24;
-
-let gridTempCol = '';
-for (i = 0; i<rowColCount; i++){
-    if (i != rowColCount-1) {
-        gridTempCol += '1fr ';
-    } else { gridTempCol += '1fr';}
+//function to change the slider bar side thicknesses
+function thumbSides(curVal) {
+    if (curVal == 3){
+        docRoot.style.setProperty('--l-thumb','0px');
+        docRoot.style.setProperty('--r-thumb','1px');
+    } else if (curVal == 50) {
+        docRoot.style.setProperty('--l-thumb','1px');
+        docRoot.style.setProperty('--r-thumb','0px');
+    } else {
+        docRoot.style.setProperty('--l-thumb','1px');
+        docRoot.style.setProperty('--r-thumb','1px');
+    }
 }
 
-const gridCont = document.querySelector('.grid-container');
-gridCont.style.gridTemplateColumns = gridTempCol;
+// SETUP--------------------------------------
 
+//grabbing global variables
+let docRoot = document.querySelector(':root');
 
-let basicGrid = addGrid(rowColCount, gridCont);
+//grabbing the slider
+let slider = document.getElementById('gridSlider');
+let sliderVal = slider.value;
 
+//grabbing the grid caption
+let sliderCap = document.getElementById('gridSizeCaption');
+sliderCap.textContent = `Number of Rows X Columns: ${sliderVal}`;
+
+//formatting the CSS grid
+let gridDim = '1fr 1fr 1fr';
+const gridCont = document.querySelector('.automata-grid');
+gridCont.style.gridTemplateColumns = gridDim;
+
+//populating the grid with cells
+let basicGrid = initGrid(3, gridCont);
+
+// calling the makeGrid method that creates corresponding CSS
 for (var key of Object.keys(basicGrid)){
     basicGrid[key].makeGrid();
-    console.log(basicGrid[key].id);
 }
+
+// INTERACTION----------------------------------------------------------
+//sliding around the slider
+slider.oninput = function() {
+
+    //change the value
+    sliderVal = this.value;
+    sliderCap.textContent = `Number of Rows X Columns: ${sliderVal}`;
+    thumbSides(this.value);
+
+    //clear the dictionary
+    basicGrid = {};
+    //clear the div
+    gridCont.innerHTML = '';
+
+    gridDim = '1fr'+' 1fr'.repeat(this.value -1);
+    gridCont.style.gridTemplateColumns = gridDim;
+
+    basicGrid = initGrid(this.value, gridCont);
+    for (var key of Object.keys(basicGrid)){
+        basicGrid[key].makeGrid();
+    }
+    console.log(Object.keys(basicGrid).length);
+    console.log(gridDim);
+}
+
+
+

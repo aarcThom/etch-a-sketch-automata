@@ -8,8 +8,19 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="grid-container">
+    <div class="page-layout">
+        <div class="grid-container">
+            <div class="automata-grid"></div>
+            <div class="gridControls">
+                <p class="caption" id="gridSizeCaption"></p>
+                <div class="slider-container">
+                    <input type="range" min="3" max="50" value="3" class="slider" id="gridSlider">
+                </div>
+            </div>
+        </div>
+        <div class="button-container"></div>    
     </div>
+    
 
     
     <script src="./etchSketch.js"></script>
