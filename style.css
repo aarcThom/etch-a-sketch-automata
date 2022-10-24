@@ -81,6 +81,10 @@
     background-color: blanchedalmond;
 }
 
+#drawBut {
+    background-color: white;
+}
+
 #gridSlider {
     -webkit-appearance: none;
     appearance: none;

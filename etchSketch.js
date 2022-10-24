@@ -29,34 +29,42 @@ class gridCell {
         this.CSSobj.style.backgroundColor = 'blanchedalmond';
 
         this.CSSobj.addEventListener('mouseover', function(event){
-            if (drawingToggle && buttonToggle == 1) {
-                event.target.style.backgroundColor = 'DarkSalmon';
+            if (drawingToggle) {
+                if (buttonToggle == 1) {
+                    event.target.style.backgroundColor = 'DarkSalmon';
+                } else if (buttonToggle == 2) {
+                    event.target.style.backgroundColor = 'blanchedalmond';
+                }      
         }});
 
         this.CSSobj.addEventListener('mousedown', function(event){
-            if (buttonToggle == 1){
-                event.target.style.backgroundColor = 'DarkSalmon';  
-                drawingToggle = true;
-        }});
+            drawingToggle = true;
+            if (buttonToggle == 1) {
+                event.target.style.backgroundColor = 'DarkSalmon';
+            } else if (buttonToggle == 2) {
+                event.target.style.backgroundColor = 'blanchedalmond';
+            }  
+        });
 
         this.CSSobj.addEventListener('mouseup', function(){
-            if (buttonToggle == 1){
-                drawingToggle = false;
-        }});
+            drawingToggle = false;
+        });
 
         this.CSSobj.addEventListener('dragstart', function(){
-            if (buttonToggle == 1){
-                drawingToggle = true;
-        }});
+            drawingToggle = true;
+        });
 
         this.CSSobj.addEventListener('dragend', function(){
-            if (buttonToggle == 1){
-                drawingToggle = false;
-        }});
+            drawingToggle = false;
+        });
 
         this.CSSobj.addEventListener('dragover', function(event){
-            if (buttonToggle == 1){
-                event.target.style.backgroundColor = 'DarkSalmon';
+            if (drawingToggle) {
+                if (buttonToggle == 1) {
+                    event.target.style.backgroundColor = 'DarkSalmon';
+                } else if (buttonToggle == 2) {
+                    event.target.style.backgroundColor = 'blanchedalmond';
+                }  
         }});
     }
 }
@@ -139,7 +147,7 @@ const drawButton = document.getElementById('drawBut');
 const eraseButton = document.getElementById('eraseBut');
 const resetButton = document.getElementById('resetBut');
 const editButtons = document.querySelectorAll('.editButs'); // nodelist of buttons
-let buttonToggle = 0;
+let buttonToggle = 1;
 
 //grabbing the grid caption
 let sliderCap = document.getElementById('gridSizeCaption');
