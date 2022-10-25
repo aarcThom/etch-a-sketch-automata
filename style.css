@@ -86,6 +86,13 @@
     box-sizing: border-box;
 }
 
+.infoPanel {
+    width: 500px;
+    padding: 10px;
+    height: 80px;
+    box-sizing: border-box;
+}
+
 .editButs {
     border-radius: 8px;
     border: 1px solid grey;

@@ -21,8 +21,14 @@ class gridCell {
         if (this.xVal != 0) {
             cell.style.borderLeft = '1px solid rgb(252, 200, 183)';
         }
+        if (this.xVal == sliderVal/2){
+            cell.style.borderLeft = '1px solid cadetblue';
+        }
         if (this.yVal != 0) {
             cell.style.borderBottom = ' 1px solid rgb(252, 200, 183)';
+        }
+        if (this.yVal == sliderVal/2){
+            cell.style.borderBottom = '1px solid brown';
         }
         
         this.container.appendChild(cell);
@@ -268,10 +274,10 @@ function lookupDict () {
 
 //function to change the slider bar side thicknesses
 function thumbSides(curVal) {
-    if (curVal == 3){
+    if (curVal == 4){
         docRoot.style.setProperty('--l-thumb','0px');
         docRoot.style.setProperty('--r-thumb','1px');
-    } else if (curVal == 50) {
+    } else if (curVal == 100) {
         docRoot.style.setProperty('--l-thumb','1px');
         docRoot.style.setProperty('--r-thumb','0px');
     } else {
@@ -284,12 +290,16 @@ function thumbSides(curVal) {
 function CAdia(celButton) {
     if (celButton.title === 'off') {
         celButton.style.backgroundColor = 'bisque';
+    }else {
+        celButton.state.backgroundColor = 'lightblue';
     }
 }
 
 function CAdiaOut(celButton) {
     if (celButton.title === 'off') {
         celButton.style.backgroundColor = 'white';
+    }else {
+        celButton.state.backgroundColor = 'grey';
     }
 }
 
@@ -376,6 +386,9 @@ function simStartClick () {
         simStartBut.textContent = 'Start Simulation';
 
         slider.disabled = false;
+        buttonToggle =1;
+        drawButton.style.backgroundColor = 'white';
+        drawButton.title = 'on';
     }
     
     
@@ -442,7 +455,7 @@ let docRoot = document.querySelector(':root');
 
 //grabbing the slider
 let slider = document.getElementById('gridSlider');
-let sliderVal = slider.value;
+let sliderVal = slider.value *2;
 
 //grabbing the drawing mode buttons and defining the button toggle
 const drawButton = document.getElementById('drawBut');
@@ -456,12 +469,12 @@ let sliderCap = document.getElementById('gridSizeCaption');
 sliderCap.textContent = `Number of Rows X Columns: ${sliderVal}`;
 
 //formatting the CSS grid
-let gridDim = '1fr 1fr 1fr';
+let gridDim = '1fr 1fr 1fr 1fr';
 const gridCont = document.querySelector('.automata-grid');
 gridCont.style.gridTemplateColumns = gridDim;
 
 //populating the grid with cells
-let basicGrid = initGrid(3, gridCont);
+let basicGrid = initGrid(4, gridCont);
 
 // calling the makeGrid method that creates corresponding CSS
 for (i in basicGrid) {
@@ -486,19 +499,19 @@ let simStartBut = document.getElementById('startSim');
 slider.oninput = function() {
 
     //change the value
-    sliderVal = this.value;
+    sliderVal = this.value * 2;
     sliderCap.textContent = `Number of Rows X Columns: ${sliderVal}`;
-    thumbSides(this.value);
+    thumbSides(sliderVal);
 
     //clear the grid list
     basicGrid = [];
     //clear the div
     gridCont.innerHTML = '';
 
-    gridDim = '1fr'+' 1fr'.repeat(this.value -1);
+    gridDim = '1fr'+' 1fr'.repeat(sliderVal -1);
     gridCont.style.gridTemplateColumns = gridDim;
 
-    basicGrid = initGrid(this.value, gridCont);
+    basicGrid = initGrid(sliderVal, gridCont);
 
     // calling the makeGrid method that creates corresponding CSS
     for (i in basicGrid) {
