@@ -1,14 +1,14 @@
 
 //adding the grid cell class
 class gridCell {
-    constructor(xVal, yVal, state, container) {
+    constructor(xVal, yVal, container) {
         this.xVal = xVal;
         this.yVal = yVal;
-        this.state = state;
         this.container = container;
 
         this.id = `${xVal},${yVal}`;
         this.CSSobj = undefined;
+        this.alive = false;
     }
 
     makeGrid() {
@@ -32,8 +32,10 @@ class gridCell {
             if (drawingToggle) {
                 if (buttonToggle == 1) {
                     event.target.style.backgroundColor = 'DarkSalmon';
+                    this.alive = true;
                 } else if (buttonToggle == 2) {
                     event.target.style.backgroundColor = 'blanchedalmond';
+                    this.alive = false;
                 }      
         }});
 
@@ -41,8 +43,10 @@ class gridCell {
             drawingToggle = true;
             if (buttonToggle == 1) {
                 event.target.style.backgroundColor = 'DarkSalmon';
+                this.alive = true;
             } else if (buttonToggle == 2) {
                 event.target.style.backgroundColor = 'blanchedalmond';
+                this.alive = false;
             }  
         });
 
@@ -62,25 +66,146 @@ class gridCell {
             if (drawingToggle) {
                 if (buttonToggle == 1) {
                     event.target.style.backgroundColor = 'DarkSalmon';
+                    this.alive = false;
                 } else if (buttonToggle == 2) {
                     event.target.style.backgroundColor = 'blanchedalmond';
+                    this.alive = false;
                 }  
         }});
     }
 }
 
+//POPULATION FUNCTIONS----------------------------------------------------------------------
 
 //function to populate grid container with grid cells
 function initGrid(gridCnt, grdContainer) {
-    let gridDict = {};
+    let gridList = [];
 
     for (let y =gridCnt - 1; y >= 0; y--) {
         for (let x=0; x<gridCnt; x++) {
-            gridDict[[x,y]] = new gridCell(x,y,false, grdContainer);
+            gridList.push(new gridCell(x,y,grdContainer));
         }
     }
-    return gridDict;
+    return gridList;
 }
+
+//function to clear the grid on reset
+function resetGrid() {
+    for (let ix in basicGrid){
+        let curCell = basicGrid[ix]
+        curCell.alive = false;
+
+        let cssCell = document.getElementById(curCell.id);
+        cssCell.style.backgroundColor = 'blanchedAlmond';
+    }
+}
+
+//laying out the automata diagrams
+function automataButtonLayout(container) {
+    for (i in luTable){
+        let scheme = luTable[i];
+        let autoScheme = undefined;
+    
+        let aSchemeCont= document.createElement('div');
+        if (scheme){
+            aSchemeCont.className = 'autoSCont';
+            aSchemeCont.style.boxSizing = 'border-box';
+            aSchemeCont.style.padding = '5px';
+    
+            autoScheme = document.createElement('div');
+            autoScheme.style.borderLeft = '1px solid rgb(252, 200, 183)';
+            autoScheme.style.borderTop = '1px solid rgb(252, 200, 183)';
+            autoScheme.style.width = '100%';
+            autoScheme.style.height = '100%';
+    
+            autoScheme.style.display = 'grid';
+            autoScheme.style.gridTemplateColumns = '1fr 1fr 1fr';
+    
+        } else {
+            aSchemeCont.className = 'blank';
+        }
+        container.appendChild(aSchemeCont);
+    
+        if (autoScheme){
+            aSchemeCont.appendChild(autoScheme);
+    
+            let cellButton = document.createElement('button');
+            cellButton.className = 'auto-cell-button';
+            let schemeName = '';
+    
+            let counter = 0;
+            for (i = 0; i < 9; i++) {
+                if (i != 4){
+                    let aCell= document.createElement('div');
+                    aCell.style.height= '100%';
+                    aCell.style.width= '100%';
+                    aCell.style.borderRight = '1px solid rgb(252, 200, 183)';
+                    aCell.style.borderBottom = '1px solid rgb(252, 200, 183)';
+    
+                    if (scheme[counter] == 1) {
+                        aCell.style.backgroundColor = 'DarkSalmon';
+                    }
+                    autoScheme.appendChild(aCell);
+                    schemeName += `${scheme[counter]}`;
+                    counter +=1;
+                    
+    
+                } else {
+                    autoScheme.appendChild(cellButton);
+                }
+            }
+            cellButton.id = schemeName;
+            cellButton.title = 'off';
+            cellButton.addEventListener('mouseover', () => CAdia(cellButton));
+            cellButton.addEventListener('mouseout', () => CAdiaOut(cellButton));
+            cellButton.addEventListener('click', () => CADiaClick(cellButton));
+    
+        }
+    }
+    }
+
+//LOOKUP TABLE FOR CA
+const x = undefined;
+const luTable = [[0,0,0,0,0,0,0,0],x,x,x,x,x,x,x,[1,1,1,1,1,1,1,1],
+    x,[1,0,0,0,0,0,0,0],[1,0,1,0,0,0,0,0],[1,0,1,0,0,0,0,1],[1,0,1,0,0,1,0,1],[0,1,0,1,1,1,1,0],[0,1,0,1,1,1,1,1],[0,1,1,1,1,1,1,1],x,
+    x,[0,1,0,0,0,0,0,0],[0,1,0,1,0,0,0,0],[0,1,0,1,1,0,0,0],[0,1,0,1,1,0,1,0],[1,0,1,0,0,1,1,1],[1,0,1,0,1,1,1,1],[1,0,1,1,1,1,1,1],x,
+    x,x,[0,1,0,0,0,0,0,1],[0,1,0,1,0,0,0,1],[0,1,1,1,0,0,0,1],[1,0,1,0,1,1,1,0],[1,0,1,1,1,1,1,0],x,x,
+    x,x,[1,1,0,0,0,0,0,0],[1,1,0,1,0,0,0,0],[1,0,0,1,0,1,1,0],[0,0,1,0,1,1,1,1],[0,0,1,1,1,1,1,1],x,x,
+    x,x,[0,1,0,0,0,0,1,0],[1,0,0,1,0,1,0,0],[1,0,1,1,1,0,0,0],[0,1,1,0,1,0,1,1],[1,0,1,1,1,1,0,1],x,x,
+    x,x,[1,0,0,0,0,0,0,1],[1,0,1,1,0,0,0,0],[1,0,0,1,0,1,0,1],[0,1,0,0,1,1,1,1],[0,1,1,1,1,1,1,0],x,x,
+    x,x,x,[1,0,1,0,0,0,1,0],[1,0,1,0,0,1,1,0],[0,1,0,1,1,1,0,1],x,x,x,
+    x,x,x,[1,0,0,1,0,0,0,1],[1,1,0,1,0,0,0,1],[0,1,1,0,1,1,1,0],x,x,x,
+    x,x,x,[0,0,1,0,1,0,1,0],[0,0,1,1,1,0,1,0],[1,1,0,1,0,1,0,1],x,x,x,
+    x,x,x,[0,1,1,0,0,0,1,0],[0,1,1,0,1,0,1,0],[1,0,0,1,1,1,0,1],x,x,x,
+    x,x,x,x,[1,1,1,0,0,0,1,0],x,x,x,x,
+    x,x,x,x,[1,0,0,1,0,0,1,1],x,x,x,x,
+    x,x,x,x,[1,1,0,0,0,0,1,1],x,x,x,x];
+
+//creating the lookup table dictionary
+function lookupDict () {
+    let dict = {};
+    for (i in luTable){
+        let el = luTable[i];
+        
+        if (el) {
+            let key = '';
+
+            for (j in el) {
+                let char = el[j];
+                key += char;
+            }
+            let state = document.getElementById(key).title;
+            if (state === 'off') {
+                dict[key]=false;
+            } else {
+                dict[key]=true;
+            }
+        }
+    }
+    return dict;
+}
+
+//INTERACTION FUNCTIONS---------------------------------------------------------------------------
 
 //function to change the slider bar side thicknesses
 function thumbSides(curVal) {
@@ -96,40 +221,116 @@ function thumbSides(curVal) {
     }
 }
 
-function editButtonClick(button, toggleNo) {
-    if (buttonToggle != toggleNo) {
-        button.style.backgroundColor = 'white';
-        buttonToggle = toggleNo;
+//CA diagram interactions
+function CAdia(celButton) {
+    if (celButton.title === 'off') {
+        celButton.style.backgroundColor = 'bisque';
+    }
+}
 
-        editButtons.forEach( function(e) {
-            if (e != button) {
-                e.style.backgroundColor = 'blanchedalmond';
-            }
-        })
+function CAdiaOut(celButton) {
+    if (celButton.title === 'off') {
+        celButton.style.backgroundColor = 'white';
+    }
+}
+
+function CADiaClick(celButton) {
+    if (celButton.title === 'off') {
+        celButton.title = 'on';
+        celButton.style.background = 'grey';
+    } else {
+        celButton.title = 'off';
+        celButton.style.background = 'bisque';
+    }
+}
+
+
+//simulation interation functions
+function simHover(simBut) {
+    if (simBut.title === 'off') {
+        simBut.style.backgroundColor = 'bisque';
+    }
+}
+
+function simHoverOut(simBut) {
+    if (simBut.title === 'off') {
+        simBut.style.backgroundColor = 'blanchedalmond';
+    }
+}
+
+function simStartClick () {
+    if (simStartBut.title === 'off') {
+        simStartBut.style.backgroundColor = 'white';
+        simStartBut.title = 'on';
+        simStartBut.textContent = 'End Simulation';
+
+        drawButton.style.backgroundColor = 'blanchedalmond';
+        eraseButton.style.backgroundColor = 'blanchedalmond';
+        drawButton.title = 'off';
+        eraseButton.title = 'off';
+        resetButton.title = 'off';
+        buttonToggle = 0; 
 
     } else {
-        button.style.backgroundColor = 'blanchedalmond';
-        buttonToggle = 0;
+        simStartBut.style.backgroundColor = 'blanchedalmond';
+        simStartBut.title = 'off';
+        simStartBut.textContent = 'Start Simulation';
+    }
+    
+    
+    }
+
+
+//drawing mode interaction functions
+
+function drawEraseHover(dEBut) {
+    if (dEBut.title === 'off' && simStartBut.title === 'off') {
+        dEBut.style.backgroundColor = 'bisque';
     }
 }
 
-function resetButtonClick() {
-    //resetting the drawing
-    for (var key of Object.keys(basicGrid)){
-        basicGrid[key].CSSobj.style.backgroundColor = 'blanchedalmond';
+function drawEraseHoverOut(dEBut) {
+    if (dEBut.title === 'off' && simStartBut.title === 'off') {
+        dEBut.style.backgroundColor = 'blanchedAlmond';
     }
-    drawingToggle = false;
-
-
-    resetButton.style.backgroundColor = 'white';
-    setTimeout(function(){
-        resetButton.style.backgroundColor = 'blanchedalmond';
-    }, 250);
 }
 
-function editButtonHover(button,toggle,background) {
-    if (buttonToggle != toggle) {
-        button.style.backgroundColor = background;
+function drawEraseClick(dEBut) {
+
+    if (dEBut.title === 'off' && simStartBut.title === 'off') {
+        switch(dEBut.id) {
+            case 'drawBut':
+                buttonToggle = 1;
+                break;
+            case 'eraseBut':
+                buttonToggle = 2;
+                break;
+            default:
+                buttonToggle = 1;
+        }
+    
+        editButtons.forEach((e) => {
+            if (dEBut.id !== e.id){
+                e.style.backgroundColor = 'blanchedAlmond';
+                e.title = 'off';
+            } else {
+                if (dEBut.id == 'resetBut'){
+                    resetGrid();
+                    e.style.backgroundColor = 'white';
+                    e.title = 'on';
+                    setTimeout(()=> {
+                        e.style.backgroundColor = 'blanchedAlmond';
+                        e.title = 'off';
+
+                        drawButton.title = 'on';
+                        drawButton.style.backgroundColor = 'white'
+                    },250);
+                } else {
+                    e.style.backgroundColor = 'white';
+                    e.title = 'on';
+                }
+            }
+        });
     }
 }
 
@@ -162,14 +363,24 @@ gridCont.style.gridTemplateColumns = gridDim;
 let basicGrid = initGrid(3, gridCont);
 
 // calling the makeGrid method that creates corresponding CSS
-for (var key of Object.keys(basicGrid)){
-    basicGrid[key].makeGrid();
+for (ix in basicGrid) {
+    basicGrid[ix].makeGrid();
 }
 
 //toggle for drawing
 let drawingToggle = false;
 
+//container for automata buttons
+let autoButCont = document.querySelector('.button-container');
+autoButCont.style.gridTemplateColumns = '1fr'+' 1fr'.repeat(8);
+automataButtonLayout(autoButCont);
+
+//simulation buttons
+let simStartBut = document.getElementById('startSim');
+
+
 // INTERACTION----------------------------------------------------------
+
 //sliding around the slider
 slider.oninput = function() {
 
@@ -178,8 +389,8 @@ slider.oninput = function() {
     sliderCap.textContent = `Number of Rows X Columns: ${sliderVal}`;
     thumbSides(this.value);
 
-    //clear the dictionary
-    basicGrid = {};
+    //clear the grid list
+    basicGrid = [];
     //clear the div
     gridCont.innerHTML = '';
 
@@ -187,23 +398,33 @@ slider.oninput = function() {
     gridCont.style.gridTemplateColumns = gridDim;
 
     basicGrid = initGrid(this.value, gridCont);
-    for (var key of Object.keys(basicGrid)){
-        basicGrid[key].makeGrid();
-    }
+
+    // calling the makeGrid method that creates corresponding CSS
+    for (ix in basicGrid) {
+        basicGrid[ix].makeGrid();
+}
 }
 
-//clicking drawing buttons
-drawButton.addEventListener('click', function() {editButtonClick(drawButton, 1)});
-eraseButton.addEventListener('click', function() {editButtonClick(eraseButton, 2)});
-resetButton.addEventListener('click', function() {resetButtonClick()});
-drawButton.addEventListener('mouseover', function(){editButtonHover(drawButton,1,'bisque')});
-eraseButton.addEventListener('mouseover', function(){editButtonHover(eraseButton,2,'bisque')});
-resetButton.addEventListener('mouseover', function(){editButtonHover(resetButton,3,'bisque')});
-drawButton.addEventListener('mouseout', function(){editButtonHover(drawButton,1,'blanchedalmond')});
-eraseButton.addEventListener('mouseout', function(){editButtonHover(eraseButton,2,'blanchedalmond')});
-resetButton.addEventListener('mouseout', function(){editButtonHover(resetButton,3,'blanchedalmond')});
+//draw mode buttons
+let btnIx = 0;
+const btnStates = [1,2,0];
+editButtons.forEach((e) => {
+    e.addEventListener('mouseover', ()=> drawEraseHover(e));
+    e.addEventListener('mouseout', ()=> drawEraseHoverOut(e));
+    e.addEventListener('click', ()=> drawEraseClick(e));
+    btnIx += 1;
+})
+
 
 //resetting the drawing mode if mouse leaves the canvas
 gridCont.addEventListener('mouseleave', () => drawingToggle = false);
 
 
+//simulation button interations
+simStartBut.addEventListener('mouseover', ()=> simHover(simStartBut));
+simStartBut.addEventListener('mouseout', ()=> simHoverOut(simStartBut));
+simStartBut.addEventListener('click', ()=> simStartClick());
+
+
+//creating the loopup dictionary
+let luDict = lookupDict();
