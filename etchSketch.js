@@ -9,6 +9,7 @@ class gridCell {
         this.id = `${xVal},${yVal}`;
         this.CSSobj = undefined;
         this.alive = false;
+        this.neighbours = '00000000';
     }
 
     makeGrid() {
@@ -32,10 +33,10 @@ class gridCell {
             if (drawingToggle) {
                 if (buttonToggle == 1) {
                     event.target.style.backgroundColor = 'DarkSalmon';
-                    this.alive = true;
+                    basicGrid[this.id].alive = true;
                 } else if (buttonToggle == 2) {
                     event.target.style.backgroundColor = 'blanchedalmond';
-                    this.alive = false;
+                    basicGrid[this.id].alive = false;
                 }      
         }});
 
@@ -43,10 +44,10 @@ class gridCell {
             drawingToggle = true;
             if (buttonToggle == 1) {
                 event.target.style.backgroundColor = 'DarkSalmon';
-                this.alive = true;
+                basicGrid[this.id].alive = true;
             } else if (buttonToggle == 2) {
                 event.target.style.backgroundColor = 'blanchedalmond';
-                this.alive = false;
+                basicGrid[this.id].alive = false;
             }  
         });
 
@@ -66,37 +67,84 @@ class gridCell {
             if (drawingToggle) {
                 if (buttonToggle == 1) {
                     event.target.style.backgroundColor = 'DarkSalmon';
-                    this.alive = false;
+                    basicGrid[this.id].alive = true;
                 } else if (buttonToggle == 2) {
                     event.target.style.backgroundColor = 'blanchedalmond';
-                    this.alive = false;
+                    basicGrid[this.id].alive = false;
                 }  
         }});
     }
-}
+
+    getNeighbours() {
+        let idCheck = '';
+
+        for (i = this.yVal + 1; i >= this.yVal - 1; i--){
+            let nbrY;
+            //wrapping the values
+            if (i == sliderVal) {
+                nbrY = 0;
+            } else if (i == -1) {
+                nbrY = sliderVal -1;
+            } else {
+                nbrY = i;
+            }
+                
+                for (j = this.xVal - 1; j <= this.xVal + 1; j++){
+                    let nbrX;
+                    //wrapping the values
+                    if (j == sliderVal) {
+                        nbrX = 0;
+                    } else if (j == -1) {
+                        nbrX = sliderVal -1;
+                    } else {
+                        nbrX = j;
+                    }
+
+                    if (!(nbrX == this.xVal && nbrY == this.yVal)){ 
+                        if (basicGrid[`${nbrX},${nbrY}`].alive == true) {
+                            idCheck += '1';
+                        } else {
+                            idCheck += '0';
+                        }
+                    }
+                }
+            }
+            this.neighbours = idCheck;
+        }
+
+        dieLive(newStat) {
+            if (newStat) {
+                basicGrid[this.id].alive = true;
+                basicGrid[this.id].CSSobj.style.backgroundColor = 'DarkSalmon';
+            } else {
+                basicGrid[this.id].alive = false;
+                basicGrid[this.id].CSSobj.style.backgroundColor = 'blanchedalmond';
+            }
+        }
+    }
 
 //POPULATION FUNCTIONS----------------------------------------------------------------------
 
 //function to populate grid container with grid cells
 function initGrid(gridCnt, grdContainer) {
-    let gridList = [];
+    let gridDict = {};
 
     for (let y =gridCnt - 1; y >= 0; y--) {
         for (let x=0; x<gridCnt; x++) {
-            gridList.push(new gridCell(x,y,grdContainer));
+            gridDict[`${x},${y}`] = new gridCell(x,y,grdContainer);
         }
     }
-    return gridList;
+    return gridDict;
 }
 
 //function to clear the grid on reset
 function resetGrid() {
-    for (let ix in basicGrid){
-        let curCell = basicGrid[ix]
+    for (let i in basicGrid){
+        let curCell = basicGrid[i]
         curCell.alive = false;
 
         let cssCell = document.getElementById(curCell.id);
-        cssCell.style.backgroundColor = 'blanchedAlmond';
+        cssCell.style.backgroundColor = 'blanchedalmond';
     }
 }
 
@@ -194,11 +242,22 @@ function lookupDict () {
                 let char = el[j];
                 key += char;
             }
+            //adding in the rotations
+            let rot90 = `${key[5]}${key[3]}${key[0]}${key[6]}${key[1]}${key[7]}${key[4]}${key[2]}`;
+            let rot180 = `${key[7]}${key[6]}${key[5]}${key[4]}${key[3]}${key[2]}${key[1]}${key[0]}`;
+            let rot270 = `${key[2]}${key[4]}${key[7]}${key[1]}${key[6]}${key[0]}${key[3]}${key[5]}`;
+
             let state = document.getElementById(key).title;
             if (state === 'off') {
-                dict[key]=false;
+                dict[key] = false;
+                dict[rot90] = false;
+                dict[rot180] = false;
+                dict[rot270] = false;
             } else {
-                dict[key]=true;
+                dict[key] = true;
+                dict[rot90] = true;
+                dict[rot180] = true;
+                dict[rot270] = true;
             }
         }
     }
@@ -269,12 +328,37 @@ function simStartClick () {
         drawButton.title = 'off';
         eraseButton.title = 'off';
         resetButton.title = 'off';
-        buttonToggle = 0; 
+        buttonToggle = 0;
+        
+        slider.disabled = true;
+
+
+        //actually starting the simulation
+
+        // current user defined look up scheme
+        let luDict = lookupDict();
+
+        // assigning keys per each cell for the lookup dictionary
+        for (let key in basicGrid){
+            basicGrid[key].getNeighbours();
+        }
+
+        //killing or resurrecting the given cell >:)
+        for (let key in basicGrid){
+            let cellNbrs = basicGrid[key].neighbours;
+            let newStatus = luDict[cellNbrs];
+            basicGrid[key].dieLive(newStatus);
+        }
+
+
+
 
     } else {
         simStartBut.style.backgroundColor = 'blanchedalmond';
         simStartBut.title = 'off';
         simStartBut.textContent = 'Start Simulation';
+
+        slider.disabled = false;
     }
     
     
@@ -291,7 +375,7 @@ function drawEraseHover(dEBut) {
 
 function drawEraseHoverOut(dEBut) {
     if (dEBut.title === 'off' && simStartBut.title === 'off') {
-        dEBut.style.backgroundColor = 'blanchedAlmond';
+        dEBut.style.backgroundColor = 'blanchedalmond';
     }
 }
 
@@ -311,7 +395,7 @@ function drawEraseClick(dEBut) {
     
         editButtons.forEach((e) => {
             if (dEBut.id !== e.id){
-                e.style.backgroundColor = 'blanchedAlmond';
+                e.style.backgroundColor = 'blanchedalmond';
                 e.title = 'off';
             } else {
                 if (dEBut.id == 'resetBut'){
@@ -319,7 +403,7 @@ function drawEraseClick(dEBut) {
                     e.style.backgroundColor = 'white';
                     e.title = 'on';
                     setTimeout(()=> {
-                        e.style.backgroundColor = 'blanchedAlmond';
+                        e.style.backgroundColor = 'blanchedalmond';
                         e.title = 'off';
 
                         drawButton.title = 'on';
@@ -363,8 +447,8 @@ gridCont.style.gridTemplateColumns = gridDim;
 let basicGrid = initGrid(3, gridCont);
 
 // calling the makeGrid method that creates corresponding CSS
-for (ix in basicGrid) {
-    basicGrid[ix].makeGrid();
+for (i in basicGrid) {
+    basicGrid[i].makeGrid();
 }
 
 //toggle for drawing
@@ -400,8 +484,8 @@ slider.oninput = function() {
     basicGrid = initGrid(this.value, gridCont);
 
     // calling the makeGrid method that creates corresponding CSS
-    for (ix in basicGrid) {
-        basicGrid[ix].makeGrid();
+    for (i in basicGrid) {
+        basicGrid[i].makeGrid();
 }
 }
 
@@ -424,7 +508,3 @@ gridCont.addEventListener('mouseleave', () => drawingToggle = false);
 simStartBut.addEventListener('mouseover', ()=> simHover(simStartBut));
 simStartBut.addEventListener('mouseout', ()=> simHoverOut(simStartBut));
 simStartBut.addEventListener('click', ()=> simStartClick());
-
-
-//creating the loopup dictionary
-let luDict = lookupDict();
