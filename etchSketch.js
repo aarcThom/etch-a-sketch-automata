@@ -317,6 +317,38 @@ function simHoverOut(simBut) {
     }
 }
 
+function timer(){
+    return new Promise(resolve => {
+        setTimeout(()=> {
+            resolve('done');
+        }, 500);
+    });
+}
+
+async function runSim() {
+    // current user defined look up scheme
+    let luDict = lookupDict();
+
+    // assigning keys per each cell for the lookup dictionary
+    for (let key in basicGrid){
+        basicGrid[key].getNeighbours();
+    }
+
+    //killing or resurrecting the given cell >:)
+    for (let key in basicGrid){
+        let cellNbrs = basicGrid[key].neighbours;
+        let newStatus = luDict[cellNbrs];
+        basicGrid[key].dieLive(newStatus);
+    }
+
+    await timer();
+    if (simStartBut.title === 'off') {
+        return;
+    } else {
+        runSim();
+    }
+}
+
 function simStartClick () {
     if (simStartBut.title === 'off') {
         simStartBut.style.backgroundColor = 'white';
@@ -334,22 +366,7 @@ function simStartClick () {
 
 
         //actually starting the simulation
-
-        // current user defined look up scheme
-        let luDict = lookupDict();
-
-        // assigning keys per each cell for the lookup dictionary
-        for (let key in basicGrid){
-            basicGrid[key].getNeighbours();
-        }
-
-        //killing or resurrecting the given cell >:)
-        for (let key in basicGrid){
-            let cellNbrs = basicGrid[key].neighbours;
-            let newStatus = luDict[cellNbrs];
-            basicGrid[key].dieLive(newStatus);
-        }
-
+        runSim();
 
 
 
