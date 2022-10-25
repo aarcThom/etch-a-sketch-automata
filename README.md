@@ -4,4 +4,4 @@ Etch-a-sketch with a twist! Each drawn pixel is a cell in an initial live state.
 👉 [Live Link](https://aarcthom.github.io/etch-a-sketch-automata) 👈
 
 
-![Settings Window](https://raw.https://github.com/aarcThom/etch-a-sketch-automata/tree/main/img/CA.gif)
+![CA](https://github.com/aarcThom/etch-a-sketch-automata/blob/main/img/CA.gif)
